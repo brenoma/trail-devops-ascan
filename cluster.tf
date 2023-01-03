@@ -1,22 +1,22 @@
 resource "aws_security_group" "sg" {
   vpc_id = aws_vpc.new-vpc.id
   ingress {
-    cidr_blocks = [ "0.0.0.0/0" ]
-    from_port = 22
-    protocol = "tcp"
-    to_port = 22
-    }
-  ingress {
-      cidr_blocks = [ "0.0.0.0/0" ]
-      from_port = 80
-      protocol = "tcp"
-      to_port = 80
-    }
-  egress {
-    from_port = 0
-    to_port = 0
-    protocol = -1
     cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 22
+    protocol    = "tcp"
+    to_port     = 22
+  }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 80
+    protocol    = "tcp"
+    to_port     = 80
+  }
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = -1
+    cidr_blocks     = ["0.0.0.0/0"]
     prefix_list_ids = []
   }
   tags = {
@@ -25,7 +25,7 @@ resource "aws_security_group" "sg" {
 }
 
 resource "aws_iam_role" "cluster" {
-  name = "${var.prefix}-${var.cluster_name}-role"
+  name               = "${var.prefix}-${var.cluster_name}-role"
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -43,17 +43,17 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "cluster-AmazonEKSVPCResourceController" {
-  role = aws_iam_role.cluster.name
+  role       = aws_iam_role.cluster.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
 }
 
 resource "aws_iam_role_policy_attachment" "cluster-AmazonEKSClusterPolicy" {
-  role = aws_iam_role.cluster.name
+  role       = aws_iam_role.cluster.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
 resource "aws_cloudwatch_log_group" "log" {
-  name = "/aws/eks/${var.prefix}-${var.cluster_name}-log"
+  name              = "/aws/eks/${var.prefix}-${var.cluster_name}-log"
   retention_in_days = var.retention_days
 }
 

@@ -3,7 +3,7 @@ variable "cluster_name" {}
 variable "retention_days" {}
 variable "PUBLIC_KEY_SSH" {}
 variable "PRIVATE_KEY_PATH" {
-  default = "aws_ascan.pem"
+  default = "/.ssh/aws_key.pem"
 }
 variable "EC2_USER" {
   default = "ubuntu"
