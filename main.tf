@@ -4,34 +4,13 @@ resource "aws_key_pair" "aws-key" {
 }
 
 resource "aws_instance" "nginx_server" {
-  ami                    = "ami-08c40ec9ead489470"
+  ami                    = "ami-0574da719dca65348"
   instance_type          = "t2.micro"
   subnet_id              = aws_subnet.subnets[0].id
-  vpc_security_group_ids = ["${aws_security_group.sg.id}"]
+  vpc_security_group_ids = [aws_security_group.sg.id]
   key_name               = aws_key_pair.aws-key.id
-
-  provisioner "file" {
-    source      = "/scripts/nginx.sh"
-    destination = "/tmp/nginx.sh"
-    connection {
-      type        = "ssh"
-      host        = self.public_ip
-      user        = var.EC2_USER
-      private_key = file(var.PRIVATE_KEY_PATH)
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /tmp/nginx.sh",
-      "sudo /tmp/nginx.sh",
-    ]
-    connection {
-      type        = "ssh"
-      host        = self.public_ip
-      user        = var.EC2_USER
-      private_key = file(var.PRIVATE_KEY_PATH)
-    }
+  tags = {
+    Name = "nginx-server"
   }
 
   connection {
@@ -41,8 +20,27 @@ resource "aws_instance" "nginx_server" {
     private_key = file(var.PRIVATE_KEY_PATH)
   }
 
-  tags = {
-    Name = "nginx-server"
+  provisioner "remote-exec" {
+    inline = [
+      "mkdir -p /home/ubuntu/.scripts"
+    ]
+  }
+
+  provisioner "file" {
+    source      = "scripts/init.sh"
+    destination = "/home/ubuntu/.scripts/init.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /home/ubuntu/.scripts/init.sh",
+      "sudo /home/ubuntu/.scripts/init.sh",
+    ]
   }
 }
 
+data "aws_instance" "nginx-instance" {}
+
+output "nginx-instance-data" {
+  public_ip = data.aws_instance.nginx-instance.public_ip,
+}
