@@ -1,12 +1,15 @@
-variable "prefix" {}
-variable "cluster_name" {}
-variable "retention_days" {}
-variable "PUBLIC_KEY_SSH" {}
+variable "PUBLIC_KEY_SSH" {
+  type = string
+}
+
 variable "PRIVATE_KEY_PATH" {
+  type = string
   default = "/.ssh/aws_key.pem"
+  description = "Path where your aws key pem file is located."
 }
-variable "EC2_USER" {
-  default = "ubuntu"
+
+variable "AWS_ACCESS_KEY" {
+  type = string
+  description = ""
 }
-variable "AWS_ACCESS_KEY" {}
 variable "AWS_SECRET_KEY" {}
